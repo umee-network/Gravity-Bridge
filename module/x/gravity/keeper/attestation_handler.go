@@ -2,16 +2,17 @@ package keeper
 
 import (
 	"fmt"
-	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	"math/big"
 	"strconv"
+
+	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 
-	"github.com/Gravity-Bridge/Gravity-Bridge/module/x/gravity/types"
 	distypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	"github.com/umee-network/Gravity-Bridge/module/x/gravity/types"
 )
 
 // Check that distKeeper implements the expected type
@@ -27,9 +28,15 @@ type AttestationHandler struct {
 
 // Check for nil members
 func (a AttestationHandler) ValidateMembers() {
-	if a.keeper     == nil { panic("Nil keeper!") }
-	if a.bankKeeper == nil { panic("Nil bankKeeper!") }
-	if a.distKeeper == nil { panic("Nil distKeeper!") }
+	if a.keeper == nil {
+		panic("Nil keeper!")
+	}
+	if a.bankKeeper == nil {
+		panic("Nil bankKeeper!")
+	}
+	if a.distKeeper == nil {
+		panic("Nil distKeeper!")
+	}
 }
 
 // SendToCommunityPool handles sending incorrect deposits to the community pool, since the deposits

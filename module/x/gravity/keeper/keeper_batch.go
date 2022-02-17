@@ -5,7 +5,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/Gravity-Bridge/Gravity-Bridge/module/x/gravity/types"
+	"github.com/umee-network/Gravity-Bridge/module/x/gravity/types"
 )
 
 /////////////////////////////
@@ -16,7 +16,7 @@ import (
 func (k Keeper) GetBatchConfirm(ctx sdk.Context, nonce uint64, tokenContract types.EthAddress, validator sdk.AccAddress) *types.MsgConfirmBatch {
 	store := ctx.KVStore(k.storeKey)
 	if err := sdk.VerifyAddressFormat(validator); err != nil {
-		ctx.Logger().Error("invalid validator address");
+		ctx.Logger().Error("invalid validator address")
 		return nil
 	}
 	entity := store.Get([]byte(types.GetBatchConfirmKey(tokenContract, nonce, validator)))

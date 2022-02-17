@@ -3,10 +3,10 @@ package keeper
 import (
 	"testing"
 
-	"github.com/Gravity-Bridge/Gravity-Bridge/module/x/gravity/types"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdktypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
+	"github.com/umee-network/Gravity-Bridge/module/x/gravity/types"
 )
 
 // Sets up 10 attestations and checks that they are returned in the correct order

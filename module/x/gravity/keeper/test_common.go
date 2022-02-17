@@ -56,7 +56,7 @@ import (
 	tmversion "github.com/tendermint/tendermint/proto/tendermint/version"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/Gravity-Bridge/Gravity-Bridge/module/x/gravity/types"
+	"github.com/umee-network/Gravity-Bridge/module/x/gravity/types"
 )
 
 var (
