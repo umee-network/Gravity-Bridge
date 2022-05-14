@@ -1,8 +1,8 @@
 package keeper
 
 import (
-	v1 "github.com/Gravity-Bridge/Gravity-Bridge/module/x/gravity/migrations/v1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	v1 "github.com/umee-network/Gravity-Bridge/module/x/gravity/migrations/v1"
 )
 
 // Migrator is a struct for handling in-place store migrations.

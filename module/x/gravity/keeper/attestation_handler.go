@@ -11,10 +11,10 @@ import (
 
 	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 
-	"github.com/Gravity-Bridge/Gravity-Bridge/module/x/gravity/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	distypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	"github.com/umee-network/Gravity-Bridge/module/x/gravity/types"
 )
 
 // Check that distKeeper implements the expected type
