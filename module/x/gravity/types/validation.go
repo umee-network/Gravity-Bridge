@@ -77,9 +77,10 @@ func NewInternalBridgeValidator(bridgeValidator BridgeValidator) (*InternalBridg
 }
 
 func (i InternalBridgeValidator) ValidateBasic() error {
-	if i.Power == 0 {
-		return sdkerrors.Wrap(ErrEmpty, "power")
-	}
+	// Remove this seemingly not needed check.
+	// if i.Power == 0 {
+	// 	return sdkerrors.Wrap(ErrEmpty, "power")
+	// }
 	if err := i.EthereumAddress.ValidateBasic(); err != nil {
 		return sdkerrors.Wrap(err, "ethereum address")
 	}
