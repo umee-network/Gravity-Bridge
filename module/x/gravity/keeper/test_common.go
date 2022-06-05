@@ -3,14 +3,13 @@ package keeper
 import (
 	"bytes"
 	"fmt"
-	"testing"
-	"time"
-
+	gravityparams "github.com/Gravity-Bridge/Gravity-Bridge/module/app/params"
 	capabilitykeeper "github.com/cosmos/cosmos-sdk/x/capability/keeper"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
-	gravityparams "github.com/umee-network/Gravity-Bridge/module/app/params"
+	"testing"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -70,7 +69,7 @@ import (
 	bech32ibckeeper "github.com/osmosis-labs/bech32-ibc/x/bech32ibc/keeper"
 	bech32ibctypes "github.com/osmosis-labs/bech32-ibc/x/bech32ibc/types"
 
-	"github.com/umee-network/Gravity-Bridge/module/x/gravity/types"
+	"github.com/Gravity-Bridge/Gravity-Bridge/module/x/gravity/types"
 )
 
 var (
