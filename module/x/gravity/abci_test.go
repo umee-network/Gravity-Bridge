@@ -41,8 +41,6 @@ func TestValsetCreationUponUnbonding(t *testing.T) {
 
 	input.Context = ctx.WithBlockHeight(ctx.BlockHeight() + 1)
 	// begin unbonding
-	// msgSvcRouter := baseapp.NewMsgServiceRouter()
-	// stakingtypes.RegisterMsgServer(msgSvcRouter, stakingkeeper.NewMsgServerImpl(input.StakingKeeper))
 	msgServer := stakingkeeper.NewMsgServerImpl(input.StakingKeeper)
 
 	undelegateMsg := keeper.NewTestMsgUnDelegateValidator(keeper.ValAddrs[0], keeper.StakingAmount)
