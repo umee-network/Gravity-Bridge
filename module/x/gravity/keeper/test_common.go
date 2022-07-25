@@ -54,6 +54,7 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
+	"github.com/cosmos/cosmos-sdk/x/staking/teststaking"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
@@ -247,6 +248,7 @@ type TestInput struct {
 	GravityKeeper     Keeper
 	AccountKeeper     authkeeper.AccountKeeper
 	StakingKeeper     stakingkeeper.Keeper
+	StakingHelper     *teststaking.Helper
 	SlashingKeeper    slashingkeeper.Keeper
 	DistKeeper        distrkeeper.Keeper
 	BankKeeper        bankkeeper.BaseKeeper
@@ -266,10 +268,7 @@ func SetupFiveValChain(t *testing.T) (TestInput, sdk.Context) {
 	// Set the params for our modules
 	input.StakingKeeper.SetParams(input.Context, TestingStakeParams)
 
-	// Initialize each of the validators
-	sh := staking.NewHandler(input.StakingKeeper)
 	for i := range []int{0, 1, 2, 3, 4} {
-
 		// Initialize the account for the key
 		acc := input.AccountKeeper.NewAccount(
 			input.Context,
@@ -280,18 +279,8 @@ func SetupFiveValChain(t *testing.T) (TestInput, sdk.Context) {
 		require.NoError(t, input.BankKeeper.MintCoins(input.Context, types.ModuleName, InitCoins))
 		input.BankKeeper.SendCoinsFromModuleToAccount(input.Context, types.ModuleName, acc.GetAddress(), InitCoins)
 
-		// Set the account in state
 		input.AccountKeeper.SetAccount(input.Context, acc)
-
-		// Create a validator for that account using some of the tokens in the account
-		// and the staking handler
-		_, err := sh(
-			input.Context,
-			NewTestMsgCreateValidator(ValAddrs[i], ConsPubKeys[i], StakingAmount),
-		)
-
-		// Return error if one exists
-		require.NoError(t, err)
+		input.StakingHelper.CreateValidator(ValAddrs[i], ConsPubKeys[i], StakingAmount, true)
 	}
 
 	// Run the staking endblocker to ensure valset is correct in state
@@ -322,7 +311,6 @@ func SetupTestChain(t *testing.T, weights []uint64, setDelegateAddresses bool) (
 	input.StakingKeeper.SetParams(input.Context, TestingStakeParams)
 
 	// Initialize each of the validators
-	sh := staking.NewHandler(input.StakingKeeper)
 	for i, weight := range weights {
 		consPrivKey := ed25519.GenPrivKey()
 		consPubKey := consPrivKey.PubKey()
@@ -344,14 +332,7 @@ func SetupTestChain(t *testing.T, weights []uint64, setDelegateAddresses bool) (
 
 		// Set the account in state
 		input.AccountKeeper.SetAccount(input.Context, acc)
-
-		// Create a validator for that account using some of the tokens in the account
-		// and the staking handler
-		_, err := sh(
-			input.Context,
-			NewTestMsgCreateValidator(valAddr, consPubKey, sdk.NewIntFromUint64(weight)),
-		)
-		require.NoError(t, err)
+		input.StakingHelper.CreateValidator(valAddr, consPubKey, sdk.NewIntFromUint64(weight), true)
 
 		// Run the staking endblocker to ensure valset is correct in state
 		staking.EndBlocker(input.Context, input.StakingKeeper)
@@ -644,6 +625,7 @@ func CreateTestEnv(t *testing.T) TestInput {
 		AccountKeeper:   accountKeeper,
 		BankKeeper:      bankKeeper,
 		StakingKeeper:   stakingKeeper,
+		StakingHelper:   teststaking.NewHelper(t, ctx, stakingKeeper),
 		SlashingKeeper:  slashingKeeper,
 		DistKeeper:      distKeeper,
 		GovKeeper:       govKeeper,
