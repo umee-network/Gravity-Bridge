@@ -43,6 +43,8 @@ import (
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	gov1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	gov1b1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
@@ -390,20 +392,20 @@ func CreateTestEnv(t *testing.T) TestInput {
 	// Initialize memory database and mount stores on it
 	db := dbm.NewMemDB()
 	ms := store.NewCommitMultiStore(db)
-	ms.MountStoreWithDB(gravityKey, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keyAcc, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keyParams, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keyStaking, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keyBank, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keyDistro, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(tkeyParams, sdk.StoreTypeTransient, db)
-	ms.MountStoreWithDB(keyGov, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keySlashing, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keyCapability, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keyUpgrade, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keyIbc, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keyIbcTransfer, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keyBech32Ibc, sdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(gravityKey, storetypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyAcc, storetypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyParams, storetypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyStaking, storetypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyBank, storetypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyDistro, storetypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(tkeyParams, storetypes.StoreTypeTransient, db)
+	ms.MountStoreWithDB(keyGov, storetypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keySlashing, storetypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyCapability, storetypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyUpgrade, storetypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyIbc, storetypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyIbcTransfer, storetypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyBech32Ibc, storetypes.StoreTypeIAVL, db)
 	err := ms.LoadLatestVersion()
 	require.Nil(t, err)
 
@@ -466,6 +468,7 @@ func CreateTestEnv(t *testing.T) TestInput {
 		getSubspace(paramsKeeper, authtypes.ModuleName),
 		authtypes.ProtoBaseAccount, // prototype
 		maccPerms,
+		sdk.GetConfig().GetBech32AccountAddrPrefix(),
 	)
 
 	blockedAddr := make(map[string]bool, len(maccPerms))
@@ -487,7 +490,7 @@ func CreateTestEnv(t *testing.T) TestInput {
 	stakingKeeper := stakingkeeper.NewKeeper(marshaler, keyStaking, accountKeeper, bankKeeper, getSubspace(paramsKeeper, stakingtypes.ModuleName))
 	stakingKeeper.SetParams(ctx, TestingStakeParams)
 
-	distKeeper := distrkeeper.NewKeeper(marshaler, keyDistro, getSubspace(paramsKeeper, distrtypes.ModuleName), accountKeeper, bankKeeper, stakingKeeper, authtypes.FeeCollectorName, nil)
+	distKeeper := distrkeeper.NewKeeper(marshaler, keyDistro, getSubspace(paramsKeeper, distrtypes.ModuleName), accountKeeper, bankKeeper, stakingKeeper, authtypes.FeeCollectorName)
 	distKeeper.SetParams(ctx, distrtypes.DefaultParams())
 
 	// set genesis items required for distribution
@@ -530,20 +533,22 @@ func CreateTestEnv(t *testing.T) TestInput {
 		AppModuleBasic: distribution.AppModuleBasic{},
 	}.Route())
 
+	bApp := *baseapp.NewBaseApp("test", log.TestingLogger(), db, MakeTestEncodingConfig().TxConfig.TxDecoder())
+
 	// Load default wasm config
 
-	govRouter := govtypes.NewRouter().
+	govRouter := gov1b1.NewRouter().
 		AddRoute(paramsproposal.RouterKey, params.NewParamChangeProposalHandler(paramsKeeper)).
-		AddRoute(govtypes.RouterKey, govtypes.ProposalHandler)
+		AddRoute(govtypes.RouterKey, gov1b1.ProposalHandler)
 
 	govKeeper := govkeeper.NewKeeper(
-		marshaler, keyGov, getSubspace(paramsKeeper, govtypes.ModuleName).WithKeyTable(govtypes.ParamKeyTable()), accountKeeper, bankKeeper, stakingKeeper, govRouter,
+		marshaler, keyGov, getSubspace(paramsKeeper, govtypes.ModuleName).WithKeyTable(gov1.ParamKeyTable()), accountKeeper, bankKeeper, stakingKeeper, govRouter, bApp.MsgServiceRouter(), govtypes.DefaultConfig(),
 	)
 
-	govKeeper.SetProposalID(ctx, govtypes.DefaultStartingProposalID)
-	govKeeper.SetDepositParams(ctx, govtypes.DefaultDepositParams())
-	govKeeper.SetVotingParams(ctx, govtypes.DefaultVotingParams())
-	govKeeper.SetTallyParams(ctx, govtypes.DefaultTallyParams())
+	govKeeper.SetProposalID(ctx, gov1.DefaultStartingProposalID)
+	govKeeper.SetDepositParams(ctx, gov1.DefaultDepositParams())
+	govKeeper.SetVotingParams(ctx, gov1.DefaultVotingParams())
+	govKeeper.SetTallyParams(ctx, gov1.DefaultTallyParams())
 
 	slashingKeeper := slashingkeeper.NewKeeper(
 		marshaler,
@@ -552,13 +557,13 @@ func CreateTestEnv(t *testing.T) TestInput {
 		getSubspace(paramsKeeper, slashingtypes.ModuleName).WithKeyTable(slashingtypes.ParamKeyTable()),
 	)
 
-	bApp := *baseapp.NewBaseApp("test", log.TestingLogger(), db, MakeTestEncodingConfig().TxConfig.TxDecoder())
 	upgradeKeeper := upgradekeeper.NewKeeper(
 		make(map[int64]bool),
 		keyUpgrade,
 		marshaler,
 		"",
 		&bApp,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -581,6 +586,7 @@ func CreateTestEnv(t *testing.T) TestInput {
 	scopedTransferKeeper := capabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 	ibcTransferKeeper := ibctransferkeeper.NewKeeper(
 		marshaler, keyIbcTransfer, getSubspace(paramsKeeper, ibctransfertypes.ModuleName),
+		ibcKeeper.ChannelKeeper,
 		ibcKeeper.ChannelKeeper, &ibcKeeper.PortKeeper,
 		accountKeeper, bankKeeper, scopedTransferKeeper,
 	)
