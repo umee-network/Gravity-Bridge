@@ -20,6 +20,7 @@ import (
 	ccrypto "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/std"
 	"github.com/cosmos/cosmos-sdk/store"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -39,6 +40,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/evidence"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/gov"
+	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/cosmos/cosmos-sdk/x/mint"
@@ -82,9 +84,9 @@ var (
 		staking.AppModuleBasic{},
 		mint.AppModuleBasic{},
 		distribution.AppModuleBasic{},
-		gov.NewAppModuleBasic(
-			paramsclient.ProposalHandler, distrclient.ProposalHandler, upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
-		),
+		gov.NewAppModuleBasic([]govclient.ProposalHandler{
+			paramsclient.ProposalHandler, distrclient.ProposalHandler, upgradeclient.LegacyProposalHandler, upgradeclient.LegacyCancelProposalHandler,
+		}),
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
 		slashing.AppModuleBasic{},
@@ -253,7 +255,7 @@ type TestInput struct {
 	Context           sdk.Context
 	Marshaler         codec.Codec
 	LegacyAmino       *codec.LegacyAmino
-	GravityStoreKey   *sdk.KVStoreKey
+	GravityStoreKey   *storetypes.KVStoreKey
 }
 
 // SetupFiveValChain does all the initialization for a 5 Validator chain using the keys here
