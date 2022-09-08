@@ -22,4 +22,7 @@ var (
 	ErrInvalidValset            = sdkerrors.Register(ModuleName, 15, "generated invalid valset")
 	ErrDuplicateEthereumKey     = sdkerrors.Register(ModuleName, 16, "duplicate ethereum key")
 	ErrDuplicateOrchestratorKey = sdkerrors.Register(ModuleName, 17, "duplicate orchestrator key")
+
+	// umee errors
+	ErrUnavailable = sdkerrors.Register(ModuleName, 100, "service is unavailable")
 )
