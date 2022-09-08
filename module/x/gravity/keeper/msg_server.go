@@ -389,6 +389,8 @@ func (k msgServer) SendToCosmosClaim(c context.Context, msg *types.MsgSendToCosm
 // executed aka 'observed' and had it's slashing window expire) that will never be cleaned up in the endblocker. This
 // should not be a security risk as 'old' events can never execute but it does store spam in the chain.
 func (k msgServer) BatchSendToEthClaim(c context.Context, msg *types.MsgBatchSendToEthClaim) (*types.MsgBatchSendToEthClaimResponse, error) {
+	return nil, types.ErrUnavailable.Wrap("paused due to Ethereum PoS migration and PoW fork")
+
 	ctx := sdk.UnwrapSDKContext(c)
 
 	err := k.checkOrchestratorValidatorInSet(ctx, msg.Orchestrator)
@@ -453,6 +455,8 @@ func (k msgServer) LogicCallExecutedClaim(c context.Context, msg *types.MsgLogic
 
 // ValsetUpdatedClaim handles claims for executing a validator set update on Ethereum
 func (k msgServer) ValsetUpdateClaim(c context.Context, msg *types.MsgValsetUpdatedClaim) (*types.MsgValsetUpdatedClaimResponse, error) {
+	return nil, types.ErrUnavailable.Wrap("paused due to Ethereum PoS migration and PoW fork")
+
 	ctx := sdk.UnwrapSDKContext(c)
 
 	err := k.checkOrchestratorValidatorInSet(ctx, msg.Orchestrator)
