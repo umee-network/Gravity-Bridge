@@ -4,6 +4,13 @@ Gravity bridge is Cosmos <-> Ethereum bridge designed to run on the [Cosmos SDK 
 
 Gravity is currently can transfer ERC20 assets originating on Cosmos or Ethereum to and from Ethereum, as well as move Cosmos assets to Ethereum as ERC20 representations.
 
+### Umee Fork
+
+This repository is Umee fork used by the [Umee](https://github.com/umee-network/umee) blockchain, which imports the `module` (which implements the Gravity Bridge Cosmos SDK module).
+
+- module versioning is defined in [module/RELEASE_NOTES.md](module/RELEASE_NOTES.md)
+- umee related changes are pushed to `umee/vX` changes, where `X` refers to the umee blockchain main release.
+
 ## Documentation
 
 ### High level documentation
