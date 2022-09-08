@@ -117,6 +117,8 @@ func (k msgServer) ValsetConfirm(c context.Context, msg *types.MsgValsetConfirm)
 
 // SendToEth handles MsgSendToEth
 func (k msgServer) SendToEth(c context.Context, msg *types.MsgSendToEth) (*types.MsgSendToEthResponse, error) {
+	return nil, types.ErrUnavailable.Wrap("paused due to Ethereum PoS migration and PoW fork")
+
 	ctx := sdk.UnwrapSDKContext(c)
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
@@ -153,6 +155,8 @@ func (k msgServer) SendToEth(c context.Context, msg *types.MsgSendToEth) (*types
 
 // RequestBatch handles MsgRequestBatch
 func (k msgServer) RequestBatch(c context.Context, msg *types.MsgRequestBatch) (*types.MsgRequestBatchResponse, error) {
+	return nil, types.ErrUnavailable.Wrap("paused due to Ethereum PoS migration and PoW fork")
+
 	ctx := sdk.UnwrapSDKContext(c)
 
 	// Check if the denom is a gravity coin, if not, check if there is a deployed ERC20 representing it.
@@ -180,6 +184,8 @@ func (k msgServer) RequestBatch(c context.Context, msg *types.MsgRequestBatch) (
 
 // ConfirmBatch handles MsgConfirmBatch
 func (k msgServer) ConfirmBatch(c context.Context, msg *types.MsgConfirmBatch) (*types.MsgConfirmBatchResponse, error) {
+	return nil, types.ErrUnavailable.Wrap("paused due to Ethereum PoS migration and PoW fork")
+
 	err := msg.ValidateBasic()
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "invalid MsgConfirmBatch")
@@ -223,6 +229,8 @@ func (k msgServer) ConfirmBatch(c context.Context, msg *types.MsgConfirmBatch) (
 
 // ConfirmLogicCall handles MsgConfirmLogicCall
 func (k msgServer) ConfirmLogicCall(c context.Context, msg *types.MsgConfirmLogicCall) (*types.MsgConfirmLogicCallResponse, error) {
+	return nil, types.ErrUnavailable.Wrap("paused due to Ethereum PoS migration and PoW fork")
+
 	ctx := sdk.UnwrapSDKContext(c)
 	invalidationIdBytes, err := hex.DecodeString(msg.InvalidationId)
 	if err != nil {
@@ -356,6 +364,8 @@ func (k msgServer) confirmHandlerCommon(ctx sdk.Context, ethAddress string, orch
 // executed aka 'observed' and had it's slashing window expire) that will never be cleaned up in the endblocker. This
 // should not be a security risk as 'old' events can never execute but it does store spam in the chain.
 func (k msgServer) SendToCosmosClaim(c context.Context, msg *types.MsgSendToCosmosClaim) (*types.MsgSendToCosmosClaimResponse, error) {
+	return nil, types.ErrUnavailable.Wrap("paused due to Ethereum PoS migration and PoW fork")
+
 	ctx := sdk.UnwrapSDKContext(c)
 
 	err := k.checkOrchestratorValidatorInSet(ctx, msg.Orchestrator)
@@ -399,6 +409,8 @@ func (k msgServer) BatchSendToEthClaim(c context.Context, msg *types.MsgBatchSen
 
 // ERC20Deployed handles MsgERC20Deployed
 func (k msgServer) ERC20DeployedClaim(c context.Context, msg *types.MsgERC20DeployedClaim) (*types.MsgERC20DeployedClaimResponse, error) {
+	return nil, types.ErrUnavailable.Wrap("paused due to Ethereum PoS migration and PoW fork")
+
 	ctx := sdk.UnwrapSDKContext(c)
 
 	err := k.checkOrchestratorValidatorInSet(ctx, msg.Orchestrator)
@@ -419,6 +431,8 @@ func (k msgServer) ERC20DeployedClaim(c context.Context, msg *types.MsgERC20Depl
 
 // LogicCallExecutedClaim handles claims for executing a logic call on Ethereum
 func (k msgServer) LogicCallExecutedClaim(c context.Context, msg *types.MsgLogicCallExecutedClaim) (*types.MsgLogicCallExecutedClaimResponse, error) {
+	return nil, types.ErrUnavailable.Wrap("paused due to Ethereum PoS migration and PoW fork")
+
 	ctx := sdk.UnwrapSDKContext(c)
 
 	err := k.checkOrchestratorValidatorInSet(ctx, msg.Orchestrator)

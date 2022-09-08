@@ -20,4 +20,7 @@ var (
 	ErrInvalidValAddress       = sdkerrors.Register(ModuleName, 13, "invalid validator address in current valset %v")
 	ErrInvalidEthAddress       = sdkerrors.Register(ModuleName, 14, "discovered invalid eth address stored for validator %v")
 	ErrInvalidValset           = sdkerrors.Register(ModuleName, 15, "generated invalid valset")
+
+	// umee errors
+	ErrUnavailable = sdkerrors.Register(ModuleName, 100, "service is unavailable")
 )
