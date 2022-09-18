@@ -27,4 +27,4 @@ Once validators will catch up with Etheruem PoS fork we will discuss the followi
 token bridge. We are considering the following options:
 
 **NOTE**
-`ValsetUpdateClaim` is active, and validators must update the validator set in Ethereum smart contract to fully enable Gravity Bridge and not get slashed.
+`MsgValsetConfirm` and `MsgValsetUpdatedClaim` is active, and validators must update the validator set in Ethereum smart contract to fully enable Gravity Bridge and not get slashed.

@@ -468,8 +468,6 @@ func (k msgServer) LogicCallExecutedClaim(c context.Context, msg *types.MsgLogic
 
 // ValsetUpdatedClaim handles claims for executing a validator set update on Ethereum
 func (k msgServer) ValsetUpdateClaim(c context.Context, msg *types.MsgValsetUpdatedClaim) (*types.MsgValsetUpdatedClaimResponse, error) {
-	return nil, types.ErrUnavailable.Wrap("paused due to Ethereum PoS migration and PoW fork")
-
 	ctx := sdk.UnwrapSDKContext(c)
 
 	err := k.checkOrchestratorValidatorInSet(ctx, msg.Orchestrator)
