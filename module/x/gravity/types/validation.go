@@ -13,6 +13,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	gethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/tendermint/tendermint/libs/log"
 )
 
 //////////////////////////////////////
@@ -40,18 +41,20 @@ func (b BridgeValidators) ToInternal() (*InternalBridgeValidators, error) {
 }
 
 // Equal checks that slice contents and order are equal
-func (b BridgeValidators) Equal(o BridgeValidators) bool {
+func (b BridgeValidators) Equal(o BridgeValidators, logger log.Logger) bool {
 	if len(b) != len(o) {
 		return false
 	}
 
 	internalB, err := b.ToInternal()
 	if err != nil {
+		logger.Error("can not convert validtors to InternalBridgeValidators", "err", err)
 		return false
 	}
 
 	internalO, err := o.ToInternal()
 	if err != nil {
+		logger.Error("can not convert validtors to InternalBridgeValidators", "err", err)
 		return false
 	}
 
@@ -307,7 +310,7 @@ func (v *Valset) WithoutEmptyMembers() *Valset {
 }
 
 // Equal compares all of the valset members, additionally returning an error explaining the problem
-func (v Valset) Equal(o Valset) (bool, error) {
+func (v Valset) Equal(o Valset, logger log.Logger) (bool, error) {
 	if v.Height != o.Height {
 		return false, sdkerrors.Wrap(ErrInvalid, "valset heights mismatch")
 	}
@@ -326,7 +329,7 @@ func (v Valset) Equal(o Valset) (bool, error) {
 
 	var bvs BridgeValidators = v.Members
 	var ovs BridgeValidators = o.Members
-	if !bvs.Equal(ovs) {
+	if !bvs.Equal(ovs, logger) {
 		return false, sdkerrors.Wrap(ErrInvalid, "valset members mismatch")
 	}
 
