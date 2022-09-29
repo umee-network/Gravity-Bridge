@@ -1,6 +1,7 @@
 package types
 
 import (
+	"bytes"
 	"fmt"
 	math "math"
 	"math/big"
@@ -12,6 +13,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	gethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/tendermint/tendermint/libs/log"
 )
 
 //////////////////////////////////////
@@ -39,14 +41,27 @@ func (b BridgeValidators) ToInternal() (*InternalBridgeValidators, error) {
 }
 
 // Equal checks that slice contents and order are equal
-func (b BridgeValidators) Equal(o BridgeValidators) bool {
+func (b BridgeValidators) Equal(o BridgeValidators, logger log.Logger) bool {
 	if len(b) != len(o) {
 		return false
 	}
 
-	for i, bv := range b {
-		ov := o[i]
-		if bv != ov {
+	internalB, err := b.ToInternal()
+	if err != nil {
+		logger.Error("can not convert validtors to InternalBridgeValidators", "err", err)
+		return false
+	}
+
+	internalO, err := o.ToInternal()
+	if err != nil {
+		logger.Error("can not convert validtors to InternalBridgeValidators", "err", err)
+		return false
+	}
+
+	for i, bv := range *internalB {
+		ov := (*internalO)[i]
+		if !bytes.Equal(bv.EthereumAddress.GetAddress().Bytes(), ov.EthereumAddress.GetAddress().Bytes()) ||
+			bv.Power != ov.Power {
 			return false
 		}
 	}
@@ -218,7 +233,6 @@ func NewValset(nonce, height uint64, members InternalBridgeValidators, rewardAmo
 
 // GetCheckpoint returns the checkpoint
 func (v Valset) GetCheckpoint(gravityIDstring string) []byte {
-
 	// error case here should not occur outside of testing since the above is a constant
 	contractAbi, abiErr := abi.JSON(strings.NewReader(ValsetCheckpointABIJSON))
 	if abiErr != nil {
@@ -296,7 +310,7 @@ func (v *Valset) WithoutEmptyMembers() *Valset {
 }
 
 // Equal compares all of the valset members, additionally returning an error explaining the problem
-func (v Valset) Equal(o Valset) (bool, error) {
+func (v Valset) Equal(o Valset, logger log.Logger) (bool, error) {
 	if v.Height != o.Height {
 		return false, sdkerrors.Wrap(ErrInvalid, "valset heights mismatch")
 	}
@@ -315,7 +329,7 @@ func (v Valset) Equal(o Valset) (bool, error) {
 
 	var bvs BridgeValidators = v.Members
 	var ovs BridgeValidators = o.Members
-	if !bvs.Equal(ovs) {
+	if !bvs.Equal(ovs, logger) {
 		return false, sdkerrors.Wrap(ErrInvalid, "valset members mismatch")
 	}
 
