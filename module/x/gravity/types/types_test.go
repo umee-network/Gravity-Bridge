@@ -95,7 +95,7 @@ func TestValsetPowerDiff(t *testing.T) {
 	}{
 		"no diff": {
 			start: BridgeValidators{
-				{Power: 1, EthereumAddress: "0x479FFc856Cda0f5D1AE6Fa61915b01351A7773D"},
+				{Power: 1, EthereumAddress: "0x479FFc856Cdfa0f5D1AE6Fa61915b01351A7773D"},
 				{Power: 2, EthereumAddress: "0x8E91960d704Df3fF24ECAb78AB9df1B5D9144140"},
 				{Power: 3, EthereumAddress: "0xF14879a175A2F1cEFC7c616f35b6d9c2b0Fd8326"},
 			},
