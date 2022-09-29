@@ -145,8 +145,10 @@ func TestValsetPowerDiff(t *testing.T) {
 	}
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
-			startInternal, _ := spec.start.ToInternal()
-			diffInternal, _ := spec.diff.ToInternal()
+			startInternal, err := spec.start.ToInternal()
+			assert.Nil(t, err)
+			diffInternal, err := spec.diff.ToInternal()
+			assert.Nil(t, err)
 			assert.Equal(t, spec.exp, startInternal.PowerDiff(*diffInternal))
 		})
 	}
