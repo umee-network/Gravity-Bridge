@@ -302,9 +302,9 @@ func (a AttestationHandler) handleValsetUpdated(ctx sdk.Context, claim types.Msg
 		observedValset := claimSet
 		observedValset.Height = trustedValset.Height // overwrite the height, since it's not part of the claim
 
-		if _, err := trustedValset.Equal(observedValset); err != nil {
-			panic(fmt.Sprintf("Potential bridge highjacking: observed valset (%+v) does not match stored valset (%+v)! %s", observedValset, trustedValset, err.Error()))
-		}
+		//if _, err := trustedValset.Equal(observedValset); err != nil {
+		//	panic(fmt.Sprintf("Potential bridge highjacking: observed valset (%+v) does not match stored valset (%+v)! %s", observedValset, trustedValset, err.Error()))
+		//}
 
 		a.keeper.SetLastObservedValset(ctx, observedValset)
 	} else { // The 0th valset is not stored on chain init, but we need to set it as the last one
@@ -503,8 +503,8 @@ func (a AttestationHandler) sendCoinToCosmosAccount(
 // Send tokens via bank keeper to a native gravity address, re-prefixing receiver to a gravity native address if necessary
 // Note: This should only be used as part of SendToCosmos attestation handling and is not a good solution for general use
 func (a AttestationHandler) sendCoinToLocalAddress(
-	ctx sdk.Context, claim types.MsgSendToCosmosClaim, receiver sdk.AccAddress, coin sdk.Coin) (err error) {
-
+	ctx sdk.Context, claim types.MsgSendToCosmosClaim, receiver sdk.AccAddress, coin sdk.Coin,
+) (err error) {
 	err = a.keeper.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, receiver, sdk.NewCoins(coin))
 	if err != nil {
 		// someone attempted to send tokens to a blacklisted user from Ethereum, log and send to Community pool
