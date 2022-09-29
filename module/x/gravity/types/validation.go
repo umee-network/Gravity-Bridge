@@ -1,6 +1,7 @@
 package types
 
 import (
+	"bytes"
 	"fmt"
 	math "math"
 	"math/big"
@@ -44,9 +45,20 @@ func (b BridgeValidators) Equal(o BridgeValidators) bool {
 		return false
 	}
 
-	for i, bv := range b {
-		ov := o[i]
-		if bv != ov {
+	internalB, err := b.ToInternal()
+	if err != nil {
+		return false
+	}
+
+	internalO, err := o.ToInternal()
+	if err != nil {
+		return false
+	}
+
+	for i, bv := range *internalB {
+		ov := (*internalO)[i]
+		if !bytes.Equal(bv.EthereumAddress.GetAddress().Bytes(), ov.EthereumAddress.GetAddress().Bytes()) ||
+			bv.Power != ov.Power {
 			return false
 		}
 	}

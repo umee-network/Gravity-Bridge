@@ -59,6 +59,34 @@ func TestValsetCheckpointGold1(t *testing.T) {
 	assert.Equal(t, goldHash, hex.EncodeToString(ourHash))
 }
 
+func TestEqual(t *testing.T) {
+	start := BridgeValidators{
+		{Power: 1, EthereumAddress: "0x3C802C60238F1bB2B809BbfF112fA19A3ba31A5D"},
+		{Power: 2, EthereumAddress: "0x8E91960d704Df3fF24ECAb78AB9df1B5D9144140"},
+		{Power: 3, EthereumAddress: "0xF14879a175A2F1cEFC7c616f35b6d9c2b0Fd8326"},
+	}
+	diff := BridgeValidators{
+		{Power: 1, EthereumAddress: "0x3C802C60238F1bB2B809BbfF112fA19A3ba31A5D"},
+		{Power: 2, EthereumAddress: "0x8E91960d704Df3fF24ECAb78AB9df1B5D9144140"},
+		{Power: 3, EthereumAddress: "0xF14879a175A2F1cEFC7c616f35b6d9c2b0Fd8326"},
+	}
+
+	assert.True(t, start.Equal(diff))
+
+	start = BridgeValidators{
+		{Power: 1, EthereumAddress: "0x3C802C60238F1bB2B809BbfF112fA19A3ba31A5D"},
+		{Power: 2, EthereumAddress: "0x8E91960d704Df3fF24ECAb78AB9df1B5D9144140"},
+		{Power: 3, EthereumAddress: "0xF14879a175A2F1cEFC7c616f35b6d9c2b0Fd8326"},
+	}
+	diff = BridgeValidators{
+		{Power: 1, EthereumAddress: "0x3C802C60238F1bB2B809BbfF112Fa19a3BA31a5d"},
+		{Power: 2, EthereumAddress: "0x8E91960d704Df3fF24ECAb78AB9df1B5D9144140"},
+		{Power: 3, EthereumAddress: "0xF14879a175A2F1cEFC7c616f35b6d9c2b0Fd8326"},
+	}
+
+	assert.True(t, start.Equal(diff))
+}
+
 func TestValsetPowerDiff(t *testing.T) {
 	specs := map[string]struct {
 		start BridgeValidators
@@ -67,7 +95,7 @@ func TestValsetPowerDiff(t *testing.T) {
 	}{
 		"no diff": {
 			start: BridgeValidators{
-				{Power: 1, EthereumAddress: "0x479FFc856Cdfa0f5D1AE6Fa61915b01351A7773D"},
+				{Power: 1, EthereumAddress: "0x479FFc856Cda0f5D1AE6Fa61915b01351A7773D"},
 				{Power: 2, EthereumAddress: "0x8E91960d704Df3fF24ECAb78AB9df1B5D9144140"},
 				{Power: 3, EthereumAddress: "0xF14879a175A2F1cEFC7c616f35b6d9c2b0Fd8326"},
 			},
