@@ -161,7 +161,6 @@ func TestValsetSort(t *testing.T) {
 		src BridgeValidators
 		exp BridgeValidators
 	}{
-
 		"by power desc": {
 			src: BridgeValidators{
 				{Power: 1, EthereumAddress: address3},
