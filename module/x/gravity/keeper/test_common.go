@@ -224,7 +224,7 @@ var (
 		MaxEntries:        10,
 		HistoricalEntries: 10000,
 		BondDenom:         "stake",
-		MinCommissionRate: sdk.MustNewDecFromStr("0.000001"),
+		MinCommissionRate: sdk.MustNewDecFromStr("0.0"),
 	}
 
 	// TestingGravityParams is a set of gravity params for testing
