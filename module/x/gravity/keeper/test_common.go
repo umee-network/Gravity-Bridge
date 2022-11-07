@@ -3,13 +3,22 @@ package keeper
 import (
 	"bytes"
 	"fmt"
+	"testing"
+	"time"
+
 	gravityparams "github.com/Gravity-Bridge/Gravity-Bridge/module/app/params"
+	ibchost "github.com/cosmos/ibc-go/v5/modules/core/24-host"
+
 	capabilitykeeper "github.com/cosmos/cosmos-sdk/x/capability/keeper"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
-	"testing"
-	"time"
+
+	gethcommon "github.com/ethereum/go-ethereum/common"
+	"github.com/stretchr/testify/require"
+	"github.com/tendermint/tendermint/libs/log"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmversion "github.com/tendermint/tendermint/proto/tendermint/version"
+	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -60,16 +69,10 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
-	gethcommon "github.com/ethereum/go-ethereum/common"
-	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmversion "github.com/tendermint/tendermint/proto/tendermint/version"
-	dbm "github.com/tendermint/tm-db"
 
-	ibctransferkeeper "github.com/cosmos/ibc-go/v3/modules/apps/transfer/keeper"
-	ibctransfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
-	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v5/modules/apps/transfer/keeper"
+	ibctransfertypes "github.com/cosmos/ibc-go/v5/modules/apps/transfer/types"
+	ibckeeper "github.com/cosmos/ibc-go/v5/modules/core/keeper"
 
 	bech32ibckeeper "github.com/osmosis-labs/bech32-ibc/x/bech32ibc/keeper"
 	bech32ibctypes "github.com/osmosis-labs/bech32-ibc/x/bech32ibc/types"
@@ -221,6 +224,7 @@ var (
 		MaxEntries:        10,
 		HistoricalEntries: 10000,
 		BondDenom:         "stake",
+		MinCommissionRate: sdk.MustNewDecFromStr("0.0"),
 	}
 
 	// TestingGravityParams is a set of gravity params for testing
@@ -521,17 +525,6 @@ func CreateTestEnv(t *testing.T) TestInput {
 	stakeAddr := authtypes.NewModuleAddress(stakingtypes.BondedPoolName)
 	moduleAcct := accountKeeper.GetAccount(ctx, stakeAddr)
 	require.NotNil(t, moduleAcct)
-
-	router := baseapp.NewRouter()
-	router.AddRoute(bank.AppModule{
-		AppModuleBasic: bank.AppModuleBasic{},
-	}.Route())
-	router.AddRoute(staking.AppModule{
-		AppModuleBasic: staking.AppModuleBasic{},
-	}.Route())
-	router.AddRoute(distribution.AppModule{
-		AppModuleBasic: distribution.AppModuleBasic{},
-	}.Route())
 
 	bApp := *baseapp.NewBaseApp("test", log.TestingLogger(), db, MakeTestEncodingConfig().TxConfig.TxDecoder())
 

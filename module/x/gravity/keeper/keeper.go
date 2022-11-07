@@ -6,6 +6,9 @@ import (
 
 	gethcommon "github.com/ethereum/go-ethereum/common"
 
+	ibctransferkeeper "github.com/cosmos/ibc-go/v5/modules/apps/transfer/keeper"
+	"github.com/tendermint/tendermint/libs/log"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -18,8 +21,6 @@ import (
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	ibctransferkeeper "github.com/cosmos/ibc-go/v5/modules/apps/transfer/keeper"
-	"github.com/tendermint/tendermint/libs/log"
 
 	bech32ibckeeper "github.com/osmosis-labs/bech32-ibc/x/bech32ibc/keeper"
 
@@ -349,11 +350,14 @@ func (k Keeper) GetUnSlashedLogicCalls(ctx sdk.Context, maxHeight uint64) (out [
 
 // prefixRange turns a prefix into a (start, end) range. The start is the given prefix value and
 // the end is calculated by adding 1 bit to the start value. Nil is not allowed as prefix.
-// 		Example: []byte{1, 3, 4} becomes []byte{1, 3, 5}
-// 				 []byte{15, 42, 255, 255} becomes []byte{15, 43, 0, 0}
+//
+//	Example: []byte{1, 3, 4} becomes []byte{1, 3, 5}
+//			 []byte{15, 42, 255, 255} becomes []byte{15, 43, 0, 0}
 //
 // In case of an overflow the end is set to nil.
-//		Example: []byte{255, 255, 255, 255} becomes nil
+//
+//	Example: []byte{255, 255, 255, 255} becomes nil
+//
 // MARK finish-batches: this is where some crazy shit happens
 func prefixRange(prefix []byte) ([]byte, []byte) {
 	if prefix == nil {

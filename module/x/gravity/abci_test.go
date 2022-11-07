@@ -5,17 +5,20 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
-	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
+
 	"github.com/Gravity-Bridge/Gravity-Bridge/module/x/gravity/keeper"
 	"github.com/Gravity-Bridge/Gravity-Bridge/module/x/gravity/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
+	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
@@ -41,9 +44,9 @@ func TestValsetCreationUponUnbonding(t *testing.T) {
 
 	input.Context = ctx.WithBlockHeight(ctx.BlockHeight() + 1)
 	// begin unbonding
-	sh := staking.NewHandler(input.StakingKeeper)
+	sh := stakingkeeper.NewMsgServerImpl(input.StakingKeeper)
 	undelegateMsg := keeper.NewTestMsgUnDelegateValidator(keeper.ValAddrs[0], keeper.StakingAmount)
-	sh(input.Context, undelegateMsg)
+	sh.Undelegate(input.Context, undelegateMsg)
 
 	// Run the staking endblocker to ensure valset is set in state
 	staking.EndBlocker(input.Context, input.StakingKeeper)
@@ -153,8 +156,8 @@ func TestNonValidatorValsetConfirm(t *testing.T) {
 	// Set the account in state
 	input.AccountKeeper.SetAccount(input.Context, acc)
 
-	sh := staking.NewHandler(input.StakingKeeper)
-	_, err := sh(
+	sh := stakingkeeper.NewMsgServerImpl(input.StakingKeeper)
+	_, err := sh.CreateValidator(
 		input.Context,
 		keeper.NewTestMsgCreateValidator(valAddr, consPubKey, sdk.NewIntFromUint64(1)),
 	)
@@ -199,7 +202,7 @@ func TestNonValidatorValsetConfirm(t *testing.T) {
 	pk.SetValsetConfirm(ctx, *conf)
 
 	// Now remove all the stake
-	_, err = sh(
+	_, err = sh.Undelegate(
 		input.Context,
 		keeper.NewTestMsgUnDelegateValidator(valAddr, sdk.NewIntFromUint64(1)),
 	)
@@ -216,7 +219,7 @@ func TestValsetSlashing_UnbondingValidator_UnbondWindow_NotExpired(t *testing.T)
 	defer func() { input.Context.Logger().Info("Asserting invariants at test end"); input.AssertInvariants() }()
 
 	val := input.StakingKeeper.Validator(ctx, keeper.ValAddrs[0])
-	fmt.Println("val1  tokens", val.GetTokens().ToDec())
+	fmt.Println("val1  tokens", val.GetTokens())
 
 	pk := input.GravityKeeper
 	params := input.GravityKeeper.GetParams(ctx)
@@ -240,11 +243,11 @@ func TestValsetSlashing_UnbondingValidator_UnbondWindow_NotExpired(t *testing.T)
 	// Validator-1  Unbond slash window is not expired. if not attested, slash
 	// Validator-2  Unbond slash window is not expired. if attested, don't slash
 	input.Context = ctx.WithBlockHeight(valUnbondingHeight)
-	sh := staking.NewHandler(input.StakingKeeper)
+	sh := stakingkeeper.NewMsgServerImpl(input.StakingKeeper)
 	undelegateMsg1 := keeper.NewTestMsgUnDelegateValidator(keeper.ValAddrs[0], keeper.StakingAmount)
-	sh(input.Context, undelegateMsg1)
+	sh.Undelegate(input.Context, undelegateMsg1)
 	undelegateMsg2 := keeper.NewTestMsgUnDelegateValidator(keeper.ValAddrs[1], keeper.StakingAmount)
-	sh(input.Context, undelegateMsg2)
+	sh.Undelegate(input.Context, undelegateMsg2)
 
 	for i, orch := range keeper.OrchAddrs {
 		if i == 0 {
@@ -265,12 +268,12 @@ func TestValsetSlashing_UnbondingValidator_UnbondWindow_NotExpired(t *testing.T)
 	// Assertions
 	val1 := input.StakingKeeper.Validator(ctx, keeper.ValAddrs[0])
 	assert.True(t, val1.IsJailed())
-	fmt.Println("val1  tokens", val1.GetTokens().ToDec())
+	fmt.Println("val1  tokens", val1.GetTokens())
 	// check if tokens are slashed for val1.
 
 	val2 := input.StakingKeeper.Validator(ctx, keeper.ValAddrs[1])
 	assert.True(t, val2.IsJailed())
-	fmt.Println("val2  tokens", val2.GetTokens().ToDec())
+	fmt.Println("val2  tokens", val2.GetTokens())
 	// check if tokens shouldn't be slashed for val2.
 }
 
@@ -310,8 +313,8 @@ func TestNonValidatorBatchConfirm(t *testing.T) {
 	// Set the account in state
 	input.AccountKeeper.SetAccount(input.Context, acc)
 
-	sh := staking.NewHandler(input.StakingKeeper)
-	_, err := sh(
+	sh := stakingkeeper.NewMsgServerImpl(input.StakingKeeper)
+	_, err := sh.CreateValidator(
 		input.Context,
 		keeper.NewTestMsgCreateValidator(valAddr, consPubKey, sdk.NewIntFromUint64(1)),
 	)
@@ -365,7 +368,7 @@ func TestNonValidatorBatchConfirm(t *testing.T) {
 	})
 
 	// Now remove all the stake
-	_, err = sh(
+	_, err = sh.Undelegate(
 		input.Context,
 		keeper.NewTestMsgUnDelegateValidator(valAddr, sdk.NewIntFromUint64(1)),
 	)
@@ -478,7 +481,7 @@ func TestValsetSetting(t *testing.T) {
 	require.True(t, len(valsets) == 1)
 }
 
-/// Test batch timeout
+// / Test batch timeout
 func TestBatchTimeout(t *testing.T) {
 	input, ctx := keeper.SetupFiveValChain(t)
 	defer func() { input.Context.Logger().Info("Asserting invariants at test end"); input.AssertInvariants() }()
