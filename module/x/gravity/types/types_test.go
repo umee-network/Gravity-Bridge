@@ -6,10 +6,12 @@ import (
 	mrand "math/rand"
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	gethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/tendermint/tendermint/libs/log"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func TestValsetConfirmHash(t *testing.T) {
@@ -71,7 +73,7 @@ func TestEqual(t *testing.T) {
 		{Power: 3, EthereumAddress: "0xF14879a175A2F1cEFC7c616f35b6d9c2b0Fd8326"},
 	}
 
-	assert.True(t, start.Equal(diff))
+	assert.True(t, start.Equal(diff, log.NewNopLogger()))
 
 	start = BridgeValidators{
 		{Power: 1, EthereumAddress: "0x3C802C60238F1bB2B809BbfF112fA19A3ba31A5D"},
@@ -84,7 +86,7 @@ func TestEqual(t *testing.T) {
 		{Power: 3, EthereumAddress: "0xF14879a175A2F1cEFC7c616f35b6d9c2b0Fd8326"},
 	}
 
-	assert.True(t, start.Equal(diff))
+	assert.True(t, start.Equal(diff, log.NewNopLogger()))
 }
 
 func TestValsetPowerDiff(t *testing.T) {

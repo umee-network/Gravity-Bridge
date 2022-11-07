@@ -4,9 +4,10 @@ import (
 	"testing"
 
 	"github.com/Gravity-Bridge/Gravity-Bridge/module/x/gravity/types"
+	"github.com/stretchr/testify/require"
+
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdktypes "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/require"
 )
 
 func TestGetAndDeleteAttestation(t *testing.T) {
