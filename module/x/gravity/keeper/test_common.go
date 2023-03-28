@@ -7,7 +7,7 @@ import (
 	"time"
 
 	gravityparams "github.com/Gravity-Bridge/Gravity-Bridge/module/app/params"
-	ibchost "github.com/cosmos/ibc-go/v5/modules/core/24-host"
+	ibchost "github.com/cosmos/ibc-go/v6/modules/core/24-host"
 
 	capabilitykeeper "github.com/cosmos/cosmos-sdk/x/capability/keeper"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
@@ -70,9 +70,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 
-	ibctransferkeeper "github.com/cosmos/ibc-go/v5/modules/apps/transfer/keeper"
-	ibctransfertypes "github.com/cosmos/ibc-go/v5/modules/apps/transfer/types"
-	ibckeeper "github.com/cosmos/ibc-go/v5/modules/core/keeper"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v6/modules/apps/transfer/keeper"
+	ibctransfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
+	ibckeeper "github.com/cosmos/ibc-go/v6/modules/core/keeper"
 
 	bech32ibckeeper "github.com/osmosis-labs/bech32-ibc/x/bech32ibc/keeper"
 	bech32ibctypes "github.com/osmosis-labs/bech32-ibc/x/bech32ibc/types"
