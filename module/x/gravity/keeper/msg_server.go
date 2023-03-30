@@ -118,6 +118,9 @@ func (k msgServer) ValsetConfirm(c context.Context, msg *types.MsgValsetConfirm)
 
 // SendToEth handles MsgSendToEth
 func (k msgServer) SendToEth(c context.Context, msg *types.MsgSendToEth) (*types.MsgSendToEthResponse, error) {
+
+	return nil, types.ErrUnavailable.Wrap("transactions to Ethereum disabled due to Umee GB phase out")
+
 	ctx := sdk.UnwrapSDKContext(c)
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
@@ -155,6 +158,9 @@ func (k msgServer) SendToEth(c context.Context, msg *types.MsgSendToEth) (*types
 
 // RequestBatch handles MsgRequestBatch
 func (k msgServer) RequestBatch(c context.Context, msg *types.MsgRequestBatch) (*types.MsgRequestBatchResponse, error) {
+
+	return nil, types.ErrUnavailable.Wrap("transactions to Ethereum disabled due to Umee GB phase out")
+
 	ctx := sdk.UnwrapSDKContext(c)
 
 	// Check if the denom is a gravity coin, if not, check if there is a deployed ERC20 representing it.
