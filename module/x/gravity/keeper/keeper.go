@@ -28,9 +28,11 @@ import (
 )
 
 // Check that our expected keeper types are implemented
-var _ types.StakingKeeper = (*stakingkeeper.Keeper)(nil)
-var _ types.SlashingKeeper = (*slashingkeeper.Keeper)(nil)
-var _ types.DistributionKeeper = (*distrkeeper.Keeper)(nil)
+var (
+	_ types.StakingKeeper      = (*stakingkeeper.Keeper)(nil)
+	_ types.SlashingKeeper     = (*slashingkeeper.Keeper)(nil)
+	_ types.DistributionKeeper = (*distrkeeper.Keeper)(nil)
+)
 
 // Keeper maintains the link to storage and exposes getter/setter methods for the various parts of the state machine
 type Keeper struct {
@@ -48,9 +50,15 @@ type Keeper struct {
 	ibcTransferKeeper *ibctransferkeeper.Keeper
 	bech32IbcKeeper   *bech32ibckeeper.Keeper
 
+	shutdown bool
+
 	AttestationHandler interface {
 		Handle(sdk.Context, types.Attestation, types.EthereumClaim) error
 	}
+}
+
+func (k *Keeper) Shutdown() {
+	k.shutdown = true
 }
 
 // Check for nil members
@@ -312,7 +320,6 @@ func (k Keeper) HasLastSlashedLogicCallBlock(ctx sdk.Context) bool {
 
 // SetLastSlashedLogicCallBlock sets the latest slashed logic call block height
 func (k Keeper) SetLastSlashedLogicCallBlock(ctx sdk.Context, blockHeight uint64) {
-
 	if k.HasLastSlashedLogicCallBlock(ctx) && k.GetLastSlashedLogicCallBlock(ctx) > blockHeight {
 		panic("Attempted to decrement LastSlashedBatchBlock")
 	}
