@@ -18,6 +18,7 @@ const (
 
 func TestAbsolutePower(t *testing.T) {
 	pwr := normalizeValidatorPower(1, math.NewInt(1))
+	// 4294967296 == 2^32 which is the maximum power 
 	require.Equal(t, pwr, uint64(4294967296))
 }
 
