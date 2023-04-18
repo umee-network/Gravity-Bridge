@@ -106,7 +106,6 @@ func TestValsetSlashing_ValsetCreated_Before_ValidatorBonded(t *testing.T) {
 	// ensure that the  validator who is bonded after valset is created is not slashed
 	val := input.StakingKeeper.Validator(ctx, keeper.ValAddrs[0])
 	require.False(t, val.IsJailed())
-
 }
 
 func TestValsetSlashing_ValsetCreated_After_ValidatorBonded(t *testing.T) {
@@ -149,6 +148,7 @@ func TestValsetSlashing_ValsetCreated_After_ValidatorBonded(t *testing.T) {
 	// ensure that the  validator who attested the valset is not slashed.
 	val = input.StakingKeeper.Validator(ctx, keeper.ValAddrs[1])
 	require.False(t, val.IsJailed())
+
 }
 
 func TestNonValidatorValsetConfirm(t *testing.T) {
