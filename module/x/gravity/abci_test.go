@@ -106,6 +106,7 @@ func TestValsetSlashing_ValsetCreated_Before_ValidatorBonded(t *testing.T) {
 	// ensure that the  validator who is bonded after valset is created is not slashed
 	val := input.StakingKeeper.Validator(ctx, keeper.ValAddrs[0])
 	require.False(t, val.IsJailed())
+
 }
 
 func TestValsetSlashing_ValsetCreated_After_ValidatorBonded(t *testing.T) {
@@ -472,6 +473,7 @@ func TestBatchSlashing(t *testing.T) {
 	lastSlashedBatchBlock := input.GravityKeeper.GetLastSlashedBatchBlock(ctx)
 	assert.Equal(t, lastSlashedBatchBlock, batch.Block)
 	assert.True(t, len(pk.GetUnSlashedBatches(ctx, uint64(ctx.BlockHeight()))) == 0)
+
 }
 
 func TestValsetEmission(t *testing.T) {
@@ -495,7 +497,7 @@ func TestValsetEmission(t *testing.T) {
 	EndBlocker(ctx, pk)
 	require.NotNil(t, pk.GetValset(ctx, uint64(pk.GetLatestValsetNonce(ctx))))
 	valsets := pk.GetValsets(ctx)
-	require.Len(t, valsets, 2)
+	require.True(t, len(valsets) == 2)
 }
 
 func TestValsetSetting(t *testing.T) {
