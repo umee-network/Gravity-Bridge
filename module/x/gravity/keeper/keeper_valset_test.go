@@ -18,7 +18,8 @@ const (
 
 func TestAbsolutePower(t *testing.T) {
 	pwr := normalizeValidatorPower(1, math.NewInt(1))
-	// 4294967296 == 2^32 which is the maximum power 
+	// 4294967296 == 2^32 which is the maximum power
+	// ref: https://github.com/umee-network/Gravity-Bridge/blob/4594f9b450b2500c40562257c153b03af647eb77/solidity/contracts/Gravity.sol#L71
 	require.Equal(t, pwr, uint64(4294967296))
 }
 
