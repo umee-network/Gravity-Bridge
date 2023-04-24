@@ -256,6 +256,28 @@ func (k Keeper) GetCurrentValset(ctx sdk.Context) (types.Valset, error) {
 	if len(validators) == 0 {
 		return types.Valset{}, types.ErrNoValidators
 	}
+
+	if k.shutdown {
+		za := types.ZeroAddress()
+		bridgeValidators := []*types.InternalBridgeValidator{
+			{
+				Power:           normalizeValidatorPower(1, sdk.NewInt(1)),
+				EthereumAddress: za,
+			},
+		}
+
+		rewardToken := &za
+		rewardAmount := sdk.NewIntFromUint64(0)
+		// increment the nonce, since this potential future valset should be after the current valset
+		valsetNonce := k.GetLatestValsetNonce(ctx) + 1
+
+		valset, err := types.NewValset(valsetNonce, uint64(ctx.BlockHeight()), bridgeValidators, rewardAmount, *rewardToken)
+		if err != nil {
+			return types.Valset{}, (sdkerrors.Wrap(err, types.ErrInvalidValset.Error()))
+		}
+		return *valset, nil
+
+	}
 	// allocate enough space for all validators, but len zero, we then append
 	// so that we have an array with extra capacity but the correct length depending
 	// on how many validators have keys set.

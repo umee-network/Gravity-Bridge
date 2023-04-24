@@ -80,26 +80,24 @@ import (
 	"github.com/Gravity-Bridge/Gravity-Bridge/module/x/gravity/types"
 )
 
-var (
-	// ModuleBasics is a mock module basic manager for testing
-	ModuleBasics = module.NewBasicManager(
-		auth.AppModuleBasic{},
-		genutil.AppModuleBasic{},
-		bank.AppModuleBasic{},
-		capability.AppModuleBasic{},
-		staking.AppModuleBasic{},
-		mint.AppModuleBasic{},
-		distribution.AppModuleBasic{},
-		gov.NewAppModuleBasic([]govclient.ProposalHandler{
-			paramsclient.ProposalHandler, distrclient.ProposalHandler, upgradeclient.LegacyProposalHandler, upgradeclient.LegacyCancelProposalHandler,
-		}),
-		params.AppModuleBasic{},
-		crisis.AppModuleBasic{},
-		slashing.AppModuleBasic{},
-		upgrade.AppModuleBasic{},
-		evidence.AppModuleBasic{},
-		vesting.AppModuleBasic{},
-	)
+// ModuleBasics is a mock module basic manager for testing
+var ModuleBasics = module.NewBasicManager(
+	auth.AppModuleBasic{},
+	genutil.AppModuleBasic{},
+	bank.AppModuleBasic{},
+	capability.AppModuleBasic{},
+	staking.AppModuleBasic{},
+	mint.AppModuleBasic{},
+	distribution.AppModuleBasic{},
+	gov.NewAppModuleBasic([]govclient.ProposalHandler{
+		paramsclient.ProposalHandler, distrclient.ProposalHandler, upgradeclient.LegacyProposalHandler, upgradeclient.LegacyCancelProposalHandler,
+	}),
+	params.AppModuleBasic{},
+	crisis.AppModuleBasic{},
+	slashing.AppModuleBasic{},
+	upgrade.AppModuleBasic{},
+	evidence.AppModuleBasic{},
+	vesting.AppModuleBasic{},
 )
 
 var (
@@ -595,7 +593,8 @@ func CreateTestEnv(t *testing.T) TestInput {
 	}
 
 	k := NewKeeper(gravityKey, getSubspace(paramsKeeper, types.DefaultParamspace), marshaler, &bankKeeper,
-		&stakingKeeper, &slashingKeeper, &distKeeper, &accountKeeper, &ibcTransferKeeper, &bech32IbcKeeper)
+		&stakingKeeper, &slashingKeeper, &distKeeper, &accountKeeper, &ibcTransferKeeper, &bech32IbcKeeper,
+		false)
 
 	stakingKeeper = *stakingKeeper.SetHooks(
 		stakingtypes.NewMultiStakingHooks(
@@ -681,7 +680,7 @@ func getSubspace(k paramskeeper.Keeper, moduleName string) paramstypes.Subspace 
 
 // MakeTestCodec creates a legacy amino codec for testing
 func MakeTestCodec() *codec.LegacyAmino {
-	var cdc = codec.NewLegacyAmino()
+	cdc := codec.NewLegacyAmino()
 	auth.AppModuleBasic{}.RegisterLegacyAminoCodec(cdc)
 	bank.AppModuleBasic{}.RegisterLegacyAminoCodec(cdc)
 	staking.AppModuleBasic{}.RegisterLegacyAminoCodec(cdc)

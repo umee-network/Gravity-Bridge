@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"cosmossdk.io/math"
 	_ "github.com/Gravity-Bridge/Gravity-Bridge/module/config"
 	"github.com/Gravity-Bridge/Gravity-Bridge/module/x/gravity/types"
 	"github.com/stretchr/testify/assert"
@@ -14,6 +15,13 @@ const (
 	ValsetCount      = 200
 	LastSlashedNonce = 10
 )
+
+func TestAbsolutePower(t *testing.T) {
+	pwr := normalizeValidatorPower(1, math.NewInt(1))
+	// 4294967296 == 2^32 which is the maximum power
+	// ref: https://github.com/umee-network/Gravity-Bridge/blob/4594f9b450b2500c40562257c153b03af647eb77/solidity/contracts/Gravity.sol#L71
+	require.Equal(t, pwr, uint64(4294967296))
+}
 
 func TestValsets(t *testing.T) {
 	input, ctx := SetupFiveValChain(t)

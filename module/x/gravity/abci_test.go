@@ -34,6 +34,35 @@ func TestValsetCreationIfNotAvailable(t *testing.T) {
 	require.True(t, len(valsets) == 1)
 }
 
+func TestValsetShutdown(t *testing.T) {
+	input, ctx := keeper.SetupFiveValChain(t)
+	defer func() { input.Context.Logger().Info("Asserting invariants at test end"); input.AssertInvariants() }()
+	pk := input.GravityKeeper
+
+	// EndBlocker should set a new validator set if not available
+	EndBlocker(ctx, pk)
+	require.NotNil(t, pk.GetValset(ctx, uint64(pk.GetLatestValsetNonce(ctx))))
+	valsets := pk.GetValsets(ctx)
+	require.True(t, len(valsets) == 1)
+
+	// enable shutdown, and check that we created a new valset with a single member (zero address)
+	pk.Shutdown()
+	EndBlocker(ctx, pk)
+	require.NotNil(t, pk.GetValset(ctx, uint64(pk.GetLatestValsetNonce(ctx))))
+	valsets = pk.GetValsets(ctx)
+	require.True(t, len(valsets) == 2)
+
+	require.Len(t, valsets[0].Members, 1)
+	require.Equal(t, valsets[0].Members[0].EthereumAddress, types.ZeroAddress().GetAddress().Hex())
+	require.Len(t, valsets[1].Members, 5)
+
+	// once shutdown is enabled, we should not create new valsets
+	EndBlocker(ctx, pk)
+	require.NotNil(t, pk.GetValset(ctx, uint64(pk.GetLatestValsetNonce(ctx))))
+	valsets = pk.GetValsets(ctx)
+	require.True(t, len(valsets) == 2)
+}
+
 func TestValsetCreationUponUnbonding(t *testing.T) {
 	input, ctx := keeper.SetupFiveValChain(t)
 	defer func() { input.Context.Logger().Info("Asserting invariants at test end"); input.AssertInvariants() }()
