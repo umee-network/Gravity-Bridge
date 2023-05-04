@@ -257,7 +257,7 @@ func (k Keeper) GetCurrentValset(ctx sdk.Context) (types.Valset, error) {
 		return types.Valset{}, types.ErrNoValidators
 	}
 
-	if k.shutdown {
+	if k.shutdownDrainAddr != nil {
 		za := types.ZeroAddress()
 		bridgeValidators := []*types.InternalBridgeValidator{
 			{

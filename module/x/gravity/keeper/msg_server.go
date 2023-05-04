@@ -505,7 +505,3 @@ func (k msgServer) SubmitBadSignatureEvidence(c context.Context, msg *types.MsgS
 
 	return &types.MsgSubmitBadSignatureEvidenceResponse{}, err
 }
-
-func (k msgServer) BurnInEth(c context.Context, msg *types.MsgBurnInEth) (*types.MsgBurnInEthResponse, error) {
-	panic("not implemented")
-}

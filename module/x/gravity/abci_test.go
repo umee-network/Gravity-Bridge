@@ -46,7 +46,8 @@ func TestValsetShutdown(t *testing.T) {
 	require.True(t, len(valsets) == 1)
 
 	// enable shutdown, and check that we created a new valset with a single member (zero address)
-	pk.Shutdown()
+	dummyaddr := sdk.MustAccAddressFromBech32("gravity1ahx7f8wyertuus9r20284ej0asrs085ceqtfnm")
+	pk.Shutdown(dummyaddr)
 	EndBlocker(ctx, pk)
 	require.NotNil(t, pk.GetValset(ctx, uint64(pk.GetLatestValsetNonce(ctx))))
 	valsets = pk.GetValsets(ctx)
