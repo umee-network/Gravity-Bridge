@@ -27,16 +27,16 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 // drainModuleAccount sends all the funds from the module account to the shutdownDrainAddr
 // only if the shutdown already happened.
 func drainModuleAccount(ctx sdk.Context, k keeper.Keeper) {
-	za := types.ZeroAddress()
 	valset := k.GetLastObservedValset(ctx)
 
-	if len(valset.Members) == 1 {
+	if len(valset.GetMembers()) == 1 {
 		// To make sure we normalize the address and then compare bytes
 		memberAddr, err := types.NewEthAddress(valset.Members[0].EthereumAddress)
 		if err != nil {
 			panic(err)
 		}
 
+		za := types.ZeroAddress()
 		if bytes.Equal(memberAddr.GetAddress().Bytes(), za.GetAddress().Bytes()) {
 			err := k.DrainModuleAccount(ctx)
 			if err != nil {
