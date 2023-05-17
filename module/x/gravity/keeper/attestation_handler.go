@@ -35,7 +35,8 @@ func (a AttestationHandler) Handle(ctx sdk.Context, att types.Attestation, claim
 	switch claim := claim.(type) {
 
 	case *types.MsgSendToCosmosClaim:
-		return a.handleSendToCosmos(ctx, *claim)
+		// ignore SendToCosmos attestations
+		return nil
 
 	case *types.MsgBatchSendToEthClaim:
 		return a.handleBatchSendToEth(ctx, *claim)

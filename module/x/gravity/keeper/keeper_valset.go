@@ -257,7 +257,9 @@ func (k Keeper) GetCurrentValset(ctx sdk.Context) (types.Valset, error) {
 		return types.Valset{}, types.ErrNoValidators
 	}
 
-	if k.shutdownDrainAddr != nil {
+	// if there's a drain account set, we need to create the shutdown valset
+	bz := ctx.KVStore(k.storeKey).Get(types.DrainAccKey)
+	if bz != nil {
 		za := types.ZeroAddress()
 		bridgeValidators := []*types.InternalBridgeValidator{
 			{

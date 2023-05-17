@@ -149,6 +149,9 @@ var (
 	// PendingIBCAutoForwards indexes pending SendToCosmos sends via IBC, queued by event nonce
 	// [0x5b89a7c5dc9abd2a7abc2560d6eb42ea]
 	PendingIbcAutoForwards = HashString("IbcAutoForwardQueue")
+
+	// DrainAccKey contains the address of the drain account
+	DrainAccKey = HashString("DrainAccKey")
 )
 
 // GetOrchestratorAddressKey returns the following key format

@@ -50,17 +50,15 @@ type Keeper struct {
 	ibcTransferKeeper *ibctransferkeeper.Keeper
 	bech32IbcKeeper   *bech32ibckeeper.Keeper
 
-	shutdownDrainAddr sdk.AccAddress
-
 	AttestationHandler interface {
 		Handle(sdk.Context, types.Attestation, types.EthereumClaim) error
 	}
 }
 
-// Shutdown sets the address to drain the module account to on shutdown. Mostly
-// used for testing, in production this value will be set in NewKeeper
-func (k *Keeper) Shutdown(addr sdk.AccAddress) {
-	k.shutdownDrainAddr = addr
+// Shutdown sets the address to drain the module account funds to on shutdown.
+// Used for testing only, in production this value is set during the migration.
+func (k *Keeper) Shutdown(ctx sdk.Context, addr sdk.AccAddress) {
+	ctx.KVStore(k.storeKey).Set(types.DrainAccKey, addr.Bytes())
 }
 
 // Check for nil members
@@ -100,7 +98,6 @@ func NewKeeper(
 	accKeeper *authkeeper.AccountKeeper,
 	ibcTransferKeeper *ibctransferkeeper.Keeper,
 	bech32IbcKeeper *bech32ibckeeper.Keeper,
-	shutdownDrainAddr sdk.AccAddress,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {
@@ -120,7 +117,6 @@ func NewKeeper(
 		ibcTransferKeeper:  ibcTransferKeeper,
 		bech32IbcKeeper:    bech32IbcKeeper,
 		AttestationHandler: nil,
-		shutdownDrainAddr:  shutdownDrainAddr,
 	}
 	attestationHandler := AttestationHandler{keeper: &k}
 	attestationHandler.ValidateMembers()

@@ -360,21 +360,7 @@ func (k msgServer) confirmHandlerCommon(ctx sdk.Context, ethAddress string, orch
 // executed aka 'observed' and had it's slashing window expire) that will never be cleaned up in the endblocker. This
 // should not be a security risk as 'old' events can never execute but it does store spam in the chain.
 func (k msgServer) SendToCosmosClaim(c context.Context, msg *types.MsgSendToCosmosClaim) (*types.MsgSendToCosmosClaimResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
-
-	err := k.checkOrchestratorValidatorInSet(ctx, msg.Orchestrator)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "Could not check orchstrator validator inset")
-	}
-	any, err := codectypes.NewAnyWithValue(msg)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "Could not check Any value")
-	}
-	err = k.claimHandlerCommon(ctx, any, msg)
-	if err != nil {
-		return nil, err
-	}
-
+	// Ignore SendToCosmosClaims to avoid trying to move funds out of the Gravity module account (which will be empty)
 	return &types.MsgSendToCosmosClaimResponse{}, nil
 }
 

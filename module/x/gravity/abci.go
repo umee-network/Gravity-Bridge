@@ -1,8 +1,6 @@
 package gravity
 
 import (
-	"bytes"
-
 	"github.com/Gravity-Bridge/Gravity-Bridge/module/x/gravity/keeper"
 	"github.com/Gravity-Bridge/Gravity-Bridge/module/x/gravity/types"
 
@@ -21,29 +19,6 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 	createValsets(ctx, k)
 	pruneValsets(ctx, k, params)
 	pruneAttestations(ctx, k)
-	drainModuleAccount(ctx, k)
-}
-
-// drainModuleAccount sends all the funds from the module account to the shutdownDrainAddr
-// only if the shutdown already happened.
-func drainModuleAccount(ctx sdk.Context, k keeper.Keeper) {
-	valset := k.GetLastObservedValset(ctx)
-
-	if len(valset.GetMembers()) == 1 {
-		// To make sure we normalize the address and then compare bytes
-		memberAddr, err := types.NewEthAddress(valset.Members[0].EthereumAddress)
-		if err != nil {
-			panic(err)
-		}
-
-		za := types.ZeroAddress()
-		if bytes.Equal(memberAddr.GetAddress().Bytes(), za.GetAddress().Bytes()) {
-			err := k.DrainModuleAccount(ctx)
-			if err != nil {
-				panic(err)
-			}
-		}
-	}
 }
 
 func createValsets(ctx sdk.Context, k keeper.Keeper) {
