@@ -14,7 +14,6 @@ func MigrateFundsToDrainAccount(ctx sdk.Context, storeKey storetypes.StoreKey, a
 
 	// First we set the drain account
 	drainAcc := sdk.MustAccAddressFromBech32("umee1uuwjqrgyphm4ac20dufs7dyz0rjl3un49jg8xe")
-	ctx.Logger().Info("Shutdown Upgrade: Enter MigrateFundsToDrainAccount()", "drainAcc", drainAcc.String())
 	ctx.KVStore(storeKey).Set(types.DrainAccKey, drainAcc.Bytes())
 
 	modAcc := ak.GetModuleAccount(ctx, types.ModuleName).GetAddress()
