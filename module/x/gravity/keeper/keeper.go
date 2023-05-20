@@ -50,15 +50,16 @@ type Keeper struct {
 	ibcTransferKeeper *ibctransferkeeper.Keeper
 	bech32IbcKeeper   *bech32ibckeeper.Keeper
 
-	shutdown bool
+	burnValset bool
 
 	AttestationHandler interface {
 		Handle(sdk.Context, types.Attestation, types.EthereumClaim) error
 	}
 }
 
-func (k *Keeper) Shutdown() {
-	k.shutdown = true
+// BurnValset is only used in tests
+func (k *Keeper) BurnValset(burn bool) {
+	k.burnValset = burn
 }
 
 // Check for nil members
@@ -98,7 +99,6 @@ func NewKeeper(
 	accKeeper *authkeeper.AccountKeeper,
 	ibcTransferKeeper *ibctransferkeeper.Keeper,
 	bech32IbcKeeper *bech32ibckeeper.Keeper,
-	shutdown bool,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {
@@ -118,7 +118,7 @@ func NewKeeper(
 		ibcTransferKeeper:  ibcTransferKeeper,
 		bech32IbcKeeper:    bech32IbcKeeper,
 		AttestationHandler: nil,
-		shutdown:           shutdown,
+		burnValset:         true, // by default we burn the valset
 	}
 	attestationHandler := AttestationHandler{keeper: &k}
 	attestationHandler.ValidateMembers()

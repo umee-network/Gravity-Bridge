@@ -61,8 +61,6 @@ service Msg {
       returns (MsgSubmitBadSignatureEvidenceResponse) {
     option (google.api.http).post = "/gravity/v1/submit_bad_signature_evidence";
   }
-
-  rpc BurnInEth(MsgBurnInEth) returns (MsgBurnInEthResponse);
 }
 
 // MsgSetOrchestratorAddress
@@ -295,16 +293,6 @@ message MsgSubmitBadSignatureEvidence {
 }
 
 message MsgSubmitBadSignatureEvidenceResponse {}
-
-// MsgBurnInEth requests validators to burn (transfer to address 0x0) give
-// amount of tokens from the Ethereum contract reserve supply, without changing
-// any balance in the Gravity module side.
-message MsgBurnInEth {
-  cosmos.base.v1beta1.Coin amount = 1 [ (gogoproto.nullable) = false ];
-  cosmos.base.v1beta1.Coin bridge_fee = 2 [ (gogoproto.nullable) = false ];
-}
-
-message MsgBurnInEthResponse {}
 
 message EventSetOperatorAddress {
   string message = 1;
