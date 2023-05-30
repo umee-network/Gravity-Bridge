@@ -35,7 +35,9 @@ func (a AttestationHandler) Handle(ctx sdk.Context, att types.Attestation, claim
 	switch claim := claim.(type) {
 
 	case *types.MsgSendToCosmosClaim:
-		return a.handleSendToCosmos(ctx, *claim)
+		// Don't handle sendToCosmos claims. We still store them (so we can keep track of the event nonce and don't
+		// block other claims) in state but we don't execute them.
+		return nil
 
 	case *types.MsgBatchSendToEthClaim:
 		return a.handleBatchSendToEth(ctx, *claim)
