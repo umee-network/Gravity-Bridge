@@ -2,7 +2,6 @@ package keeper
 
 import (
 	v2 "github.com/Gravity-Bridge/Gravity-Bridge/module/x/gravity/migrations/v2"
-	v3 "github.com/Gravity-Bridge/Gravity-Bridge/module/x/gravity/migrations/v3"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -21,11 +20,4 @@ func NewMigrator(keeper Keeper) Migrator {
 func (m Migrator) Migrate1to2(ctx sdk.Context) error {
 	ctx.Logger().Info("Mercury Upgrade: Enter Migrate1to2()")
 	return v2.MigrateStore(ctx, m.keeper.storeKey, m.keeper.cdc)
-}
-
-// Migrate2to3 migrates from consensus version 2 to 3.
-func (m Migrator) Migrate2to3(ctx sdk.Context) error {
-	ctx.Logger().Info("Shutdown Upgrade: Enter Migrate2to3()")
-	drainAcc := sdk.MustAccAddressFromBech32("umee1uuwjqrgyphm4ac20dufs7dyz0rjl3un49jg8xe")
-	return v3.MigrateFundsToDrainAccount(ctx, m.keeper.storeKey, m.keeper.accountKeeper, m.keeper.bankKeeper, drainAcc)
 }
