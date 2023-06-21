@@ -433,3 +433,18 @@ func (k Keeper) IsOnBlacklist(ctx sdk.Context, addr types.EthAddress) bool {
 func (k Keeper) InvalidSendToEthAddress(ctx sdk.Context, addr types.EthAddress, _erc20Addr types.EthAddress) bool {
 	return k.IsOnBlacklist(ctx, addr) || addr == types.ZeroAddress()
 }
+
+func (k Keeper) MigrateFundsToDrainAccount(
+	ctx sdk.Context,
+	drainAcc sdk.AccAddress,
+) error {
+	ctx.Logger().Info("Shutdown Upgrade: Enter MigrateFundsToDrainAccount()")
+	modAcc := k.accountKeeper.GetModuleAccount(ctx, types.ModuleName).GetAddress()
+	balances := k.bankKeeper.GetAllBalances(ctx, modAcc)
+	if balances.Empty() {
+		ctx.Logger().Info("Shutdown Upgrade: No balances present in module account", "drainAcc", modAcc.String())
+		return nil
+	}
+
+	return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, drainAcc, balances)
+}
